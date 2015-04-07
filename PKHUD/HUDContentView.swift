@@ -133,7 +133,7 @@ public struct HUDContentView {
     //// Provides the system UIActivityIndicatorView as an alternative.
     public final class SystemActivityIndicatorView: UIView {
         
-        required public init() {
+        required public override init() {
             super.init(frame: CGRectMake(0.0, 0.0, 120.0, 120.0))
             self.commonInit()
         }
