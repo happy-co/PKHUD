@@ -9,62 +9,45 @@
 import UIKit
 import PKHUD
 
-@objc
 class DemoViewController: UIViewController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        HUDController.sharedController.dimsBackground = false
-        HUDController.sharedController.userInteractionOnUnderlyingViewsEnabled = false
+        PKHUD.sharedHUD.dimsBackground = false
+        PKHUD.sharedHUD.userInteractionOnUnderlyingViewsEnabled = false
+    }
+
+    @IBAction func showAnimatedSuccessHUD(sender: AnyObject) {
+        PKHUD.sharedHUD.contentView = PKHUDSuccessView()
+        PKHUD.sharedHUD.show()
+        PKHUD.sharedHUD.hide(afterDelay: 2.0);
     }
     
-    @IBAction func showStatusHUD(sender: AnyObject) {
-        HUDController.sharedController.contentView = HUDContentView.StatusView(title: "Ringer", subtitle: "Silent", image: HUDAssets.ringerMutedImage)
-        HUDController.sharedController.show()
-        HUDController.sharedController.hide(afterDelay: 2.0)
+    @IBAction func showAnimatedErrorHUD(sender: AnyObject) {
+        PKHUD.sharedHUD.contentView = PKHUDErrorView()
+        PKHUD.sharedHUD.show()
+        PKHUD.sharedHUD.hide(afterDelay: 2.0);
     }
     
-    @IBAction func showProgressHUD(sender: AnyObject) {
-        HUDController.sharedController.contentView = HUDContentView.ProgressView()
-        HUDController.sharedController.show()
-        HUDController.sharedController.hide(afterDelay: 2.0)
-    }
-    
-    @IBAction func showAppleProgressHUD(sender: AnyObject) {
-        HUDController.sharedController.contentView = HUDContentView.SystemActivityIndicatorView()
-        HUDController.sharedController.show()
-        HUDController.sharedController.hide(afterDelay: 2.0)
-    }
-    
-    @IBAction func showTitleHUD(sender: AnyObject) {
-        HUDController.sharedController.contentView = HUDContentView.TitleView(title: "Success", image: HUDAssets.checkmarkImage)
-        HUDController.sharedController.show()
-        HUDController.sharedController.hide(afterDelay: 2.0)
-    }
-    
-    @IBAction func showSubtitleHUD(sender: AnyObject) {
-        HUDController.sharedController.contentView = HUDContentView.SubtitleView(subtitle: "Error", image: HUDAssets.crossImage)
-        HUDController.sharedController.show()
-        HUDController.sharedController.hide(afterDelay: 2.0)
-    }
-    
-    @IBAction func showTextHUD(sender: AnyObject) {
-        HUDController.sharedController.contentView = HUDContentView.TextView(text: "Requesting Licence…")
-        HUDController.sharedController.show()
-        HUDController.sharedController.hide(afterDelay: 2.0)
-    }
-    
-    @IBAction func showAlertWithHUD(sender: AnyObject) {
-        let alert = UIAlertController(title: "An Alert", message: "With an Extraordinary Message", preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-        self.presentViewController(alert, animated: true, completion: nil)
+    @IBAction func showAnimatedProgressHUD(sender: AnyObject) {
+        PKHUD.sharedHUD.contentView = PKHUDProgressView()
+        PKHUD.sharedHUD.show()
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.25 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) {
-            self.showTitleHUD(sender)
+        let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(2.0 * Double(NSEC_PER_SEC)))
+        dispatch_after(delayTime, dispatch_get_main_queue()) {
+            PKHUD.sharedHUD.contentView = PKHUDSuccessView()
+            PKHUD.sharedHUD.hide(afterDelay: 2.0)
         }
     }
     
-    override func supportedInterfaceOrientations() -> Int {
-        return Int(UIInterfaceOrientationMask.AllButUpsideDown.rawValue)
+    @IBAction func showTextHUD(sender: AnyObject) {
+        PKHUD.sharedHUD.contentView = PKHUDTextView(text: "Requesting Licence…")
+        PKHUD.sharedHUD.show()
+        PKHUD.sharedHUD.hide(afterDelay: 2.0)
+    }
+    
+    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+        return UIInterfaceOrientationMask.AllButUpsideDown;
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
