@@ -9,6 +9,34 @@
 
 import UIKit
 
+extension UIView {
+    func firstResponder() -> UIResponder? {
+        if isFirstResponder {
+            return self
+        }
+
+        for subview in subviews {
+            if let responder = subview.firstResponder() {
+                return responder
+            }
+        }
+
+        return nil
+    }
+}
+
+
+func getFirstResponder() -> UIResponder? {
+    for window in UIApplication.shared.windows {
+        if let responder = window.firstResponder() {
+            return responder
+        }
+    }
+
+    return nil
+}
+
+
 /// The window used to display the PKHUD within. Placed atop the applications main window.
 internal class Window: UIWindow {
     
@@ -24,7 +52,7 @@ internal class Window: UIWindow {
         super.init(coder: aDecoder)
         commonInit()
     }
-    
+
     fileprivate func commonInit() {
         rootViewController = WindowRootViewController()
         windowLevel = UIWindowLevelNormal + 500.0
@@ -40,10 +68,20 @@ internal class Window: UIWindow {
         frameView.center = center
         backgroundView.frame = bounds
     }
+
+    internal var _firstResponder: UIResponder? = nil
     
     internal func showFrameView() {
         layer.removeAllAnimations()
+
+        _firstResponder = getFirstResponder()
+
+        if let responder = _firstResponder {
+            responder.resignFirstResponder()
+        }
+
         makeKeyAndVisible()
+
         frameView.center = center
         frameView.alpha = 1.0
         isHidden = false
@@ -65,7 +103,11 @@ internal class Window: UIWindow {
         }
         
         willHide = true
-        
+
+        if let responder = _firstResponder {
+            responder.becomeFirstResponder()
+        }
+
         if anim {
             UIView.animate(withDuration: 0.8, animations: {
                 self.frameView.alpha = 0.0
